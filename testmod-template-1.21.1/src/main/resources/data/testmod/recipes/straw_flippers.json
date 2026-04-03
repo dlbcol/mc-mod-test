@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "I I",
+    "SIS",
+    "T T"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "tag": "testmod:straw_material"
+    },
+    "T": {
+      "item": "minecraft:string"
+    }
+  },
+  "result": {
+    "id": "testmod:straw_flippers",
+    "count": 1
+  }
+}

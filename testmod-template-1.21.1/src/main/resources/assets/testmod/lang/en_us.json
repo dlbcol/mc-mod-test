@@ -1,0 +1,16 @@
+{
+  "itemGroup.testmod": "Example Mod Tab",
+  "block.testmod.example_block": "Example Block",
+  "item.testmod.example_item": "Example Item",
+  "item.testmod.bamboo_respirator_helmet": "Bamboo Respirator Helmet",
+  "item.testmod.crop_copper_backtank_chestplate": "Crop-Copper Backtank",
+  "item.testmod.straw_flippers": "Straw Flippers",
+
+  "testmod.configuration.title": "Test Mod Configs",
+  "testmod.configuration.section.testmod.common.toml": "Test Mod Configs",
+  "testmod.configuration.section.testmod.common.toml.title": "Test Mod Configs",
+  "testmod.configuration.items": "Item List",
+  "testmod.configuration.logDirtBlock": "Log Dirt Block",
+  "testmod.configuration.magicNumberIntroduction": "Magic Number Text",
+  "testmod.configuration.magicNumber": "Magic Number"
+}

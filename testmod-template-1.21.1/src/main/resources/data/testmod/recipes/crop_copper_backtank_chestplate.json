@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ICI",
+    "CKC",
+    "ICI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "K": {
+      "item": "minecraft:dried_kelp_block"
+    }
+  },
+  "result": {
+    "id": "testmod:crop_copper_backtank_chestplate",
+    "count": 1
+  }
+}
