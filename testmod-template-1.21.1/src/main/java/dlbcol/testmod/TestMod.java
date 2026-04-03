@@ -44,6 +44,8 @@ public class TestMod {
     public static final String MODID = "testmod";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
+    private static final String WB_ACTIVE_TAG = MODID + ".water_breathing_active";
+    private static final String WB_MODE_TAG = MODID + ".water_breathing_mode";
     // Create a Deferred Register to hold Blocks which will all be registered under the "testmod" namespace
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     // Create a Deferred Register to hold Items which will all be registered under the "testmod" namespace
@@ -148,23 +150,56 @@ public class TestMod {
         boolean hasHelmet = player.getItemBySlot(EquipmentSlot.HEAD).is(BAMBOO_RESPIRATOR_HELMET.get());
         boolean hasChest = player.getItemBySlot(EquipmentSlot.CHEST).is(CROP_COPPER_BACKTANK_CHESTPLATE.get());
         boolean hasBoots = player.getItemBySlot(EquipmentSlot.FEET).is(STRAW_FLIPPERS.get());
+        boolean inWater = player.isInWaterOrBubble();
+        boolean submerged = player.isUnderWater();
+        var persistentData = player.getPersistentData();
 
-        if (!player.isInWaterOrBubble()) {
-            return;
+        MobEffectInstance waterBreathing = player.getEffect(MobEffects.WATER_BREATHING);
+        boolean waterBreathingFromArmor = waterBreathing != null && waterBreathing.isAmbient();
+        boolean waterBreathingArmorActive = persistentData.getBoolean(WB_ACTIVE_TAG);
+        int currentWaterBreathingMode = hasHelmet ? (hasChest ? 2 : 1) : 0;
+        int waterBreathingDuration = currentWaterBreathingMode == 2 ? 2400 : 200;
+
+        MobEffectInstance dolphinsGrace = player.getEffect(MobEffects.DOLPHINS_GRACE);
+        boolean dolphinsGraceFromArmor = dolphinsGrace != null && dolphinsGrace.isAmbient();
+
+        if (!submerged || !hasHelmet) {
+            if (waterBreathingFromArmor) {
+                player.removeEffect(MobEffects.WATER_BREATHING);
+            }
+
+            // Reset grant state once the player is no longer submerged.
+            // This prevents refreshing while still underwater but allows a fresh grant after resurfacing.
+            if (!submerged) {
+                persistentData.putBoolean(WB_ACTIVE_TAG, false);
+                persistentData.putInt(WB_MODE_TAG, 0);
+            }
         }
 
-        // Helmet alone: 2.5 seconds water breathing per tick (~50 ticks)
-        // Helmet + Backtank: 5 seconds water breathing per tick (~100 ticks, refreshes constantly)
-        // Flippers: continuous swim speed boost while underwater
-        if (hasHelmet) {
-            player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 50, 0, true, false, true));
+        // Helmet alone: ~10 seconds of water breathing.
+        // Helmet + Backtank: ~2 minutes of water breathing (temporary stand-in until tank-fill mechanic exists).
+        // Flippers: continuously refreshed swim speed boost while underwater.
+        if (submerged && hasHelmet && !waterBreathingArmorActive) {
+            player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, waterBreathingDuration, 0, true, false, true));
+            persistentData.putBoolean(WB_ACTIVE_TAG, true);
+            persistentData.putInt(WB_MODE_TAG, currentWaterBreathingMode);
         }
 
-        if (hasHelmet && hasChest) {
-            player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 100, 0, true, false, true));
+        // If backtank is removed mid-swim, immediately reduce remaining armor breathing to helmet duration.
+        // Equipping backtank again underwater will not extend/refresh the timer.
+        if (submerged && hasHelmet && !hasChest && waterBreathingFromArmor && waterBreathing != null && waterBreathing.getDuration() > 200) {
+            player.removeEffect(MobEffects.WATER_BREATHING);
+            player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 200, 0, true, false, true));
+            persistentData.putInt(WB_MODE_TAG, 1);
         }
 
-        if (hasBoots) {
+        if (!inWater || !hasBoots) {
+            if (dolphinsGraceFromArmor) {
+                player.removeEffect(MobEffects.DOLPHINS_GRACE);
+            }
+        }
+
+        if (inWater && hasBoots) {
             player.addEffect(new MobEffectInstance(MobEffects.DOLPHINS_GRACE, 50, 0, true, false, true));
         }
     }
