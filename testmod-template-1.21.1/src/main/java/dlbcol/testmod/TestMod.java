@@ -64,8 +64,8 @@ public class TestMod {
 
 // Ocean side-set: utility-focused gear for underwater exploration.
     // Iron-tier armor value + strong exploration effects for mid-game viability.
-    public static final DeferredItem<Item> BAMBOO_RESPIRATOR_HELMET = ITEMS.register(
-            "bamboo_respirator_helmet",
+        public static final DeferredItem<Item> RESPIRATOR_AND_GOGGLES = ITEMS.register(
+            "respirator_and_goggles",
             () -> new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.HELMET, new Item.Properties()));
 
     public static final DeferredItem<Item> CROP_COPPER_BACKTANK_CHESTPLATE = ITEMS.register(
@@ -83,7 +83,7 @@ public class TestMod {
             .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(EXAMPLE_ITEM.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
-                output.accept(BAMBOO_RESPIRATOR_HELMET.get());
+                output.accept(RESPIRATOR_AND_GOGGLES.get());
                 output.accept(CROP_COPPER_BACKTANK_CHESTPLATE.get());
                 output.accept(STRAW_FLIPPERS.get());
             }).build());
@@ -147,7 +147,7 @@ public class TestMod {
             return;
         }
 
-        boolean hasHelmet = player.getItemBySlot(EquipmentSlot.HEAD).is(BAMBOO_RESPIRATOR_HELMET.get());
+        boolean hasHelmet = player.getItemBySlot(EquipmentSlot.HEAD).is(RESPIRATOR_AND_GOGGLES.get());
         boolean hasChest = player.getItemBySlot(EquipmentSlot.CHEST).is(CROP_COPPER_BACKTANK_CHESTPLATE.get());
         boolean hasBoots = player.getItemBySlot(EquipmentSlot.FEET).is(STRAW_FLIPPERS.get());
         boolean inWater = player.isInWaterOrBubble();
